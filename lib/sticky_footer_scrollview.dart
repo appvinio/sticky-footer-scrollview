@@ -17,12 +17,18 @@ class StickyFooterScrollView extends StatefulWidget {
   ///scroll control of this scrollview
   final ScrollController? scrollController;
 
+  final EdgeInsets? scrollViewPadding;
+
+  final EdgeInsets? childPadding;
+
   StickyFooterScrollView({
     Key? key,
     required this.footer,
     required this.itemBuilder,
     required this.itemCount,
     this.scrollController,
+    this.scrollViewPadding,
+    this.childPadding,
   })  : assert(itemCount >= 0, 'itemCount must >=0'),
         super(key: key);
 
@@ -40,6 +46,7 @@ class _StickyFooterScrollViewState extends State<StickyFooterScrollView> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint) {
       return SingleChildScrollView(
+        padding: widget.scrollViewPadding,
         controller: widget.scrollController,
         child: ConstrainedBox(
           constraints: BoxConstraints(maxHeight: _height ?? double.maxFinite),
@@ -62,6 +69,7 @@ class _StickyFooterScrollViewState extends State<StickyFooterScrollView> {
               LayoutId(
                 id: StickyScrollView.Body,
                 child: ListView.builder(
+                  padding: widget.childPadding,
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemBuilder: widget.itemBuilder,
@@ -90,8 +98,7 @@ class StickyHeaderFooterScrollViewDelegate extends MultiChildLayoutDelegate {
   ///size update callback
   final Function updateSize;
 
-  StickyHeaderFooterScrollViewDelegate(
-      this.height, this.width, this.updateSize);
+  StickyHeaderFooterScrollViewDelegate(this.height, this.width, this.updateSize);
 
   @override
   void performLayout(Size size) {
@@ -119,8 +126,7 @@ class StickyHeaderFooterScrollViewDelegate extends MultiChildLayoutDelegate {
           maxWidth: this.width,
         ),
       );
-      double remainingHeight =
-          this.height - leadingSize.height - footerSize.height;
+      double remainingHeight = this.height - leadingSize.height - footerSize.height;
 
       if (remainingHeight > 0) {
         //sticky footer
